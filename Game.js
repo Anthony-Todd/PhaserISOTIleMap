@@ -30,6 +30,7 @@ BasicGame.Game.prototype = {
     create: function () {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+        this.playButton = this.add.button(8, 8, 'buttons', this.quitGame, this, 'quit_over', 'quit_normal', 'quit_pressed');
 
     },
 
