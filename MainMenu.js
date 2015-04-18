@@ -26,7 +26,6 @@ BasicGame.MainMenu.prototype = {
 	update: function () {
 
 		//	Do some nice funky main menu effect here
-
 	},
 
 	startGame: function (pointer) {
