@@ -12,6 +12,7 @@ BasicGame.Preloader.prototype = {
 
 	preload: function () {
 
+        this.game.plugins.add(new Phaser.Plugin.Isometric(this.game));
 		//	These are the assets we loaded in Boot.js
 		//	A nice sparkly background and a loading progress bar
 		this.background = this.add.sprite(0, 0, 'preloaderBackground');
@@ -30,7 +31,10 @@ BasicGame.Preloader.prototype = {
 		//this.load.bitmapFont('carrier_command', 'fonts/bitmapFonts/carrier_command.png', 'fonts/bitmapFonts/carrier_command.xml');
 		//	+ lots of other required assets here
 
-		
+        this.load.atlasJSONHash('tileset', 'assets/tileset.png', 'assets/tileset.json');
+
+        this.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
+        this.game.iso.anchor.setTo(0.5, 0.1);
 
 	},
 
@@ -38,7 +42,6 @@ BasicGame.Preloader.prototype = {
 
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		//this.preloadBar.cropEnabled = false;
-
 	},
 
 	update: function () {
@@ -55,7 +58,7 @@ BasicGame.Preloader.prototype = {
 		if (this.ready == false)
 		{
 			this.ready = true;
-			this.state.start('MainMenu');
+			this.state.start('Game');
 		}
 
 
