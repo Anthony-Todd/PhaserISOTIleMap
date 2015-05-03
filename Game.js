@@ -24,6 +24,7 @@ BasicGame.Game = function (game) {
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 
     this.water = [];
+    this.groundNodes = [];
     this.isoGroup = [];
 };
 
@@ -32,7 +33,7 @@ BasicGame.Game.prototype = {
     create: function () {
 
         this.isoGroup = this.add.group();
-
+        this.cursorPos = new Phaser.Plugin.Isometric.Point3();
         // we won't really be using IsoArcade physics, but I've enabled it anyway so the debug bodies can be seen
         this.isoGroup.enableBody = true;
         this.isoGroup.physicsBodyType = Phaser.Plugin.Isometric.ISOARCADE;
@@ -73,22 +74,28 @@ BasicGame.Game.prototype = {
         for (var y = 1; y <= 11; y += 1) {
             for (var x = 1; x <= 11; x += 1) {
                 //console.log(tileArray[tiles[i]]);
-                var z = tiles[i] === 0 ? 0 : this.rnd.pick([2, 3, 4]);
-                tile = this.add.isoSprite(x*size, y*size, 0, 'tileset', tileArray[tiles[i]], this.isoGroup);
+                var tile_index = tiles[i];
+                var z = tile_index === 0 ? 0 : this.rnd.pick([2, 3, 4]);
+                tile = this.add.isoSprite(x*size, y*size, 0, 'tileset', tileArray[tile_index], this.isoGroup);
                 tile.anchor.set(0.5, 1);
                 tile.smoothed = false;
                 tile.body.moves = false;
                 
-                if (tiles[i] === 4) {
+                if (tile_index === 4) {
                     tile.isoZ += 6;
                 }
-                if (tiles[i] <= 10 && (tiles[i] < 5 || tiles[i] > 6)) {
+                if (tile_index <= 10 && (tile_index < 5 || tile_index > 6)) {
                     tile.scale.x = this.rnd.pick([-1, 1]);
                 }
                 
-                if (tiles[i] === 0) {
+                if (tile_index === 0) {
                     this.water.push(tile);
                 }
+                else if( tile_index >= 1 && tile_index <= 7 )
+                {
+                    this.groundNodes.push(tile);
+                }
+
                 i++;
             }
         }
@@ -103,10 +110,30 @@ BasicGame.Game.prototype = {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         var self = this;
+
+        this.game.iso.unproject(this.input.activePointer.position, this.cursorPos);
+
         self.water.forEach(function (w) {
             //console.log(w);
             w.isoZ = (-2 * Math.sin((self.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((self.time.now + (w.isoY * 8)) * 0.005));
             w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
+        });
+
+        self.groundNodes.forEach(function (g) {
+            var inBounds = g.isoBounds.containsXY(self.cursorPos.x, self.cursorPos.y-1);
+            // If it does, do a little animation and tint change.
+            if (!g.selected && inBounds) {
+                g.selected = true;
+                g.tint = 0x86bfda;
+                g.defaultZ = g.isoZ;
+                self.add.tween(g).to({ isoZ: g.defaultZ+4 }, 200, Phaser.Easing.Quadratic.InOut, true);
+            }
+            // If not, revert back to how it was.
+            else if (g.selected && !inBounds) {
+                g.selected = false;
+                g.tint = 0xffffff;
+                self.add.tween(g).to({ isoZ: g.defaultZ }, 200, Phaser.Easing.Quadratic.InOut, true);
+            }
         });
 
     },
@@ -114,12 +141,14 @@ BasicGame.Game.prototype = {
     render: function () {
         
         var self = this;
+        /*
         self.isoGroup.forEach(function (tile) {
             self.game.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
         });
-
-        self.game.debug.text(this.time.fps || '--', 2, 14, "#a7aebe");
+    */
         self.game.debug.text(Phaser.VERSION, 2, this.world.height - 2, "#ffff00");
+        self.game.debug.text("FPS:" + (this.time.fps || '--'), 54, this.world.height - 2, "#a7aebe");
+        self.game.debug.text(self.cursorPos.x + " " + self.cursorPos.y, 128, this.world.height - 2, "#ffff00");
  
     },
 
