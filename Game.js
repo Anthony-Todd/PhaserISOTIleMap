@@ -102,21 +102,25 @@ BasicGame.Game.prototype = {
     update: function () {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        /*
-        this.water.forEach(function (w) {
+        var self = this;
+        self.water.forEach(function (w) {
             //console.log(w);
-            w.isoZ = (-2 * Phaser.Math.sin((this.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Phaser.Math.sin((this.time.now + (w.isoY * 8)) * 0.005));
+            w.isoZ = (-2 * Math.sin((self.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((self.time.now + (w.isoY * 8)) * 0.005));
             w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
         });
-*/
+
     },
 
     render: function () {
-        isoGroup.forEach(function (tile) {
-            this.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
+        
+        var self = this;
+        self.isoGroup.forEach(function (tile) {
+            self.game.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
         });
-        this.debug.text(this.time.fps || '--', 2, 14, "#a7aebe");
-        this.debug.text(Phaser.VERSION, 2, this.world.height - 2, "#ffff00");
+
+        self.game.debug.text(this.time.fps || '--', 2, 14, "#a7aebe");
+        self.game.debug.text(Phaser.VERSION, 2, this.world.height - 2, "#ffff00");
+ 
     },
 
     quitGame: function (pointer) {
