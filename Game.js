@@ -77,13 +77,23 @@ BasicGame.Game.prototype = {
                 var tile_index = tiles[i];
                 var z = tile_index === 0 ? 0 : this.rnd.pick([2, 3, 4]);
                 tile = this.add.isoSprite(x*size, y*size, 0, 'tileset', tileArray[tile_index], this.isoGroup);
+                
                 tile.anchor.set(0.5, 1);
+
+                tile.resetIsoBounds();
+
                 tile.smoothed = false;
                 tile.body.moves = false;
                 
                 if (tile_index === 4) {
                     tile.isoZ += 6;
                 }
+
+                if (tile_index >=8)
+                {
+                    tile.iosZ += 128;
+                }
+
                 if (tile_index <= 10 && (tile_index < 5 || tile_index > 6)) {
                     tile.scale.x = this.rnd.pick([-1, 1]);
                 }
@@ -110,7 +120,6 @@ BasicGame.Game.prototype = {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         var self = this;
-
         this.game.iso.unproject(this.input.activePointer.position, this.cursorPos);
 
         self.water.forEach(function (w) {
@@ -141,11 +150,11 @@ BasicGame.Game.prototype = {
     render: function () {
         
         var self = this;
-        /*
+
         self.isoGroup.forEach(function (tile) {
             self.game.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
         });
-    */
+
         self.game.debug.text(Phaser.VERSION, 2, this.world.height - 2, "#ffff00");
         self.game.debug.text("FPS:" + (this.time.fps || '--'), 54, this.world.height - 2, "#a7aebe");
         self.game.debug.text(self.cursorPos.x + " " + self.cursorPos.y, 128, this.world.height - 2, "#ffff00");
