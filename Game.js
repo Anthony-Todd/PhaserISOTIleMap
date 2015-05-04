@@ -120,7 +120,7 @@ BasicGame.Game.prototype = {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         var self = this;
-        this.game.iso.unproject(this.input.activePointer.position, this.cursorPos);
+        this.game.iso.unproject(this.input.activePointer.position, this.cursorPos,37);
 
         self.water.forEach(function (w) {
             //console.log(w);
